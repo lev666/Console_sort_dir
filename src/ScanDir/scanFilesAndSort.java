@@ -1,12 +1,14 @@
 package ScanDir;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public class scanFilesAndSort {
 
@@ -16,31 +18,16 @@ public class scanFilesAndSort {
     private final int[] reportArray = new int[5];
 
     static {
-        String audio = "audio";
-        String video = "video";
-        String image = "image";
+        Properties prop = new Properties();
+        try {
+            prop.load(new FileInputStream("conf/config.properties"));
 
-        formatFiles.put("jpg", image);
-        formatFiles.put("jpeg", image);
-        formatFiles.put("png", image);
-        formatFiles.put("gif", image);
-        formatFiles.put("webp", image);
-
-        formatFiles.put("mp4", video);
-        formatFiles.put("avi", video);
-        formatFiles.put("mkv", video);
-        formatFiles.put("mov", video);
-        formatFiles.put("wmv", video);
-        formatFiles.put("flv", video);
-        formatFiles.put("webm", video);
-        formatFiles.put("avchd", video);
-        formatFiles.put("obb", video);
-
-        formatFiles.put("mp3", audio);
-        formatFiles.put("wav", audio);
-        formatFiles.put("flac", audio);
-        formatFiles.put("wma", audio);
-        formatFiles.put("aif", audio);
+            for (String key : prop.stringPropertyNames()) {
+                formatFiles.put(key, prop.getProperty(key));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void report() {
