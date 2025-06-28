@@ -57,12 +57,10 @@ public class scanFilesAndSort {
                             distFold.mkdirs();
                             Path distDir = new File(distFold, fileName).toPath();
                             Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
-                            if (formatFiles.get(ext).equals("image")) {
-                                reportArray[0] += 1;
-                            } else if (formatFiles.get(ext).equals("video")) {
-                                reportArray[1] += 1;
-                            } else if (formatFiles.get(ext).equals("audio")) {
-                                reportArray[2] += 1;
+                            switch (mapRule) {
+                                case "image" -> reportArray[0]++;
+                                case "video" -> reportArray[1]++;
+                                case "audio" -> reportArray[2]++;
                             }
                         } else {
                             File distFold = new File(sortDir, "other");
