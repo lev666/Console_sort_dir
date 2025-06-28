@@ -10,38 +10,41 @@ import java.util.Map;
 
 public class scanFilesAndSort {
 
-    private File folderDir;
-    private File sortDir;
+    private final File folderDir;
+    private final File sortDir;
     private static final Map<String, String> formatFiles = new HashMap<>();
-    private int[] Report = new int[4];
+    private final int[] reportArray = new int[5];
 
     static {
-        formatFiles.put("jpg", "image");
-        formatFiles.put("jpeg", "image");
-        formatFiles.put("png", "image");
-        formatFiles.put("gif", "image");
-        formatFiles.put("png", "image");
-        formatFiles.put("webp", "image");
+        String audio = "audio";
+        String video = "video";
+        String image = "image";
 
-        formatFiles.put("mp4", "video");
-        formatFiles.put("avi", "video");
-        formatFiles.put("mkv", "video");
-        formatFiles.put("mov", "video");
-        formatFiles.put("wmv", "video");
-        formatFiles.put("flv", "video");
-        formatFiles.put("webm", "video");
-        formatFiles.put("avchd", "video");
-        formatFiles.put("obb", "video");
+        formatFiles.put("jpg", image);
+        formatFiles.put("jpeg", image);
+        formatFiles.put("png", image);
+        formatFiles.put("gif", image);
+        formatFiles.put("webp", image);
 
-        formatFiles.put("mp3", "audio");
-        formatFiles.put("wav", "audio");
-        formatFiles.put("flac", "audio");
-        formatFiles.put("wma", "audio");
-        formatFiles.put("aif", "audio");
+        formatFiles.put("mp4", video);
+        formatFiles.put("avi", video);
+        formatFiles.put("mkv", video);
+        formatFiles.put("mov", video);
+        formatFiles.put("wmv", video);
+        formatFiles.put("flv", video);
+        formatFiles.put("webm", video);
+        formatFiles.put("avchd", video);
+        formatFiles.put("obb", video);
+
+        formatFiles.put("mp3", audio);
+        formatFiles.put("wav", audio);
+        formatFiles.put("flac", audio);
+        formatFiles.put("wma", audio);
+        formatFiles.put("aif", audio);
     }
 
     public void report() {
-        System.out.printf("Сортировка завершена. Перемещено: %d Изображений, %d Видео, %d аудио. Не удалось перместить: %d файла", Report[0], Report[1], Report[2], Report[3]);
+        System.out.printf("Сортировка завершена. Перемещено: %d Изображений, %d Видео, %d Аудио, %d прочее. Не удалось перместить: %d файла", reportArray[0], reportArray[1], reportArray[2], reportArray[4], reportArray[3]);
     }
 
     public scanFilesAndSort(File folderDir, File sortDir) {
@@ -61,19 +64,27 @@ public class scanFilesAndSort {
                     try {
                         int firstIndex = fileName.lastIndexOf(".");
                         String ext = fileName.substring(firstIndex + 1);
-                        File distFold = new File(sortDir, formatFiles.get(ext));
-                        distFold.mkdirs();
-                        Path distDir = new File(distFold, file.getName()).toPath();
-                        Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
-                        if (formatFiles.get(ext).equals("image")) {
-                            Report[0] += 1;
-                        }  else if (formatFiles.get(ext).equals("video")) {
-                            Report[1] += 1;
-                        } else if (formatFiles.get(ext).equals("audio")) {
-                            Report[2] += 1;
+                        if (formatFiles.get(ext) != null) {
+                            File distFold = new File(sortDir, formatFiles.get(ext));
+                            distFold.mkdirs();
+                            Path distDir = new File(distFold, file.getName()).toPath();
+                            Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
+                            if (formatFiles.get(ext).equals("image")) {
+                                reportArray[0] += 1;
+                            } else if (formatFiles.get(ext).equals("video")) {
+                                reportArray[1] += 1;
+                            } else if (formatFiles.get(ext).equals("audio")) {
+                                reportArray[2] += 1;
+                            }
+                        } else {
+                            File distFold = new File(sortDir, "other");
+                            distFold.mkdirs();
+                            Path distDir = new File(distFold, file.getName()).toPath();
+                            Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
+                            reportArray[4] += 1;
                         }
                     } catch (IOException e) {
-                            Report[3] += 1;
+                            reportArray[3] += 1;
                             System.err.println("Не удалось переместить файл " + file.getName() + ": " + e.getMessage());
                         }
                     }
