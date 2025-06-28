@@ -51,10 +51,11 @@ public class scanFilesAndSort {
                     try {
                         int firstIndex = fileName.lastIndexOf(".");
                         String ext = fileName.substring(firstIndex + 1);
-                        if (formatFiles.get(ext) != null) {
-                            File distFold = new File(sortDir, formatFiles.get(ext));
+                        String mapRule = formatFiles.get(ext);
+                        if (mapRule != null && firstIndex > 0) {
+                            File distFold = new File(sortDir, mapRule);
                             distFold.mkdirs();
-                            Path distDir = new File(distFold, file.getName()).toPath();
+                            Path distDir = new File(distFold, fileName).toPath();
                             Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
                             if (formatFiles.get(ext).equals("image")) {
                                 reportArray[0] += 1;
@@ -66,7 +67,7 @@ public class scanFilesAndSort {
                         } else {
                             File distFold = new File(sortDir, "other");
                             distFold.mkdirs();
-                            Path distDir = new File(distFold, file.getName()).toPath();
+                            Path distDir = new File(distFold, fileName).toPath();
                             Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
                             reportArray[4] += 1;
                         }
