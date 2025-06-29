@@ -1,4 +1,4 @@
-package ScanDir;
+package scanDir;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,10 +12,11 @@ import java.util.Properties;
 
 public class scanFilesAndSort {
 
-    private final File folderDir;
-    private final File sortDir;
+    DirectoryPaths dir = new DirectoryPaths();
     private static final Map<String, String> formatFiles = new HashMap<>();
-    private final int[] reportArray = new int[5];
+    private static final Map<String, Integer> reportArray = new HashMap<>();
+    private static final String otherStr = "other";
+    private static final String errorStr = "error";
 
     static {
         Properties prop = new Properties();
@@ -31,15 +32,23 @@ public class scanFilesAndSort {
     }
 
     public void report() {
-        System.out.printf("Сортировка завершена. Перемещено: %d Изображений, %d Видео, %d Аудио, %d прочее. Не удалось перместить: %d файла", reportArray[0], reportArray[1], reportArray[2], reportArray[4], reportArray[3]);
+        int image = reportArray.get("image") == null ? 0 : reportArray.get("image");
+        int video = reportArray.get("video") == null ? 0 : reportArray.get("video");
+        int audio = reportArray.get("audio") == null ? 0 : reportArray.get("audio");
+        int other = reportArray.get(otherStr) == null ? 0 : reportArray.get(otherStr);
+        int error = reportArray.get(errorStr) == null ? 0 : reportArray.get(errorStr);
+        System.out.printf("Сортировка завершена. Перемещено: %d Изображений, %d Видео, %d Аудио, %d прочее. Не удалось перместить: %d файла", image, video, audio, other, error);
     }
 
-    public scanFilesAndSort(File folderDir, File sortDir) {
-        this.folderDir = folderDir;
-        this.sortDir = sortDir;
+    private static void otherSort(File sortDir, String fileName, File file) throws IOException {
+        File distFold = new File(sortDir, otherStr);
+        distFold.mkdirs();
+        Path distDir = new File(distFold, fileName).toPath();
+        Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
+        reportArray.put(otherStr, reportArray.getOrDefault(otherStr, 0) + 1);
     }
 
-    public void sortDir() {
+    public void sortDir(File folderDir, File sortDir) {
         try {
             File[] files = folderDir.listFiles();
             if (files != null) {
@@ -52,25 +61,21 @@ public class scanFilesAndSort {
                         int firstIndex = fileName.lastIndexOf(".");
                         String ext = fileName.substring(firstIndex + 1);
                         String mapRule = formatFiles.get(ext);
+                        if (firstIndex == -1) {
+                            otherSort(sortDir, fileName, file);
+                            continue;
+                        }
                         if (mapRule != null && firstIndex > 0) {
                             File distFold = new File(sortDir, mapRule);
                             distFold.mkdirs();
                             Path distDir = new File(distFold, fileName).toPath();
                             Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
-                            switch (mapRule) {
-                                case "image" -> reportArray[0]++;
-                                case "video" -> reportArray[1]++;
-                                case "audio" -> reportArray[2]++;
-                            }
+                            reportArray.put(mapRule, reportArray.getOrDefault(mapRule, 0) + 1);
                         } else {
-                            File distFold = new File(sortDir, "other");
-                            distFold.mkdirs();
-                            Path distDir = new File(distFold, fileName).toPath();
-                            Files.move(file.toPath(), distDir, StandardCopyOption.REPLACE_EXISTING);
-                            reportArray[4] += 1;
+                            otherSort(sortDir, fileName, file);
                         }
                     } catch (IOException e) {
-                            reportArray[3] += 1;
+                            reportArray.put(errorStr, reportArray.getOrDefault(errorStr, 0) + 1);
                             System.err.println("Не удалось переместить файл " + file.getName() + ": " + e.getMessage());
                         }
                     }

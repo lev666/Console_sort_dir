@@ -1,17 +1,10 @@
-package ScanDir;
+package scanDir;
 
 import java.io.File;
 import java.util.Scanner;
 
 public class viewFile {
-
-    private File folderDir;
-
-    public viewFile(File folderDir) {
-        this.folderDir = folderDir;
-    }
-    public void scanFolder() {
-        Scanner sc = new Scanner(System.in);
+    public void scanFolder(File folderDir, Scanner sc) {
         System.out.println("Хотите просмотреть содержимое директории до сортировки?");
         System.out.println("1 - Да");
         System.out.println("2 - Нет");
