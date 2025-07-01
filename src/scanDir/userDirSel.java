@@ -5,10 +5,11 @@ import java.util.Scanner;
 
 
 public class userDirSel {
-    private int exmCount = 0;
+    private boolean NestedScan = false;
     DirectoryPaths defFolder = new DirectoryPaths();
 
     private File getValidatedPathFromUser(Scanner sc) {
+        int exmCount = 0;
         while (true) {
             System.out.println("Введите путь к директории: ");
             String pathName = sc.nextLine();
@@ -38,23 +39,50 @@ public class userDirSel {
     }
 
     public File changeSortDir(Scanner sc) {
-        System.out.println("Требуется ли отсортировать в другую директорию?");
+        System.out.println("Требуется ли отсортировать в другую директорию? (по умолчанию \"нет\")");
         System.out.println("1 - Да");
         System.out.println("2 - Нет. Сделать в " + defFolder.getLocalDir());
         System.out.print("Введите значение: ");
-        if  (sc.hasNextInt()) {
-            byte sortDirChange = sc.nextByte();
-            sc.nextLine();
-            if (sortDirChange == 1) {
-                return userDirConf(sc);
-            } else if (sortDirChange == 2) {
-                defFolder.setSortDir(defFolder.getLocalDir());
+        while (true) {
+            if (sc.hasNextLine()) {
+                String str = sc.nextLine();
+                if (str.equals("1")) {
+                    System.out.println("Выбрано: " + str);
+                    return userDirConf(sc);
+                } else if (str.equals("2") || str.isEmpty()) {
+                    System.out.println("Выбрано: " + 2);
+                    defFolder.setSortDir(defFolder.getLocalDir());
+                    break;
+                }
             }
-        } else {
-            System.out.println("Некорректное значение!");
-            return defFolder.getLocalDir();
         }
-
+        System.out.println("");
         return defFolder.getSortDir();
     }
+
+//    public void NestedScanUser(Scanner sc) {
+//        System.out.println("Включить сортировку во вложенных папках? (по умолчанию \"да\")?");
+//        System.out.println("1 - да");
+//        System.out.println("2 - нет");
+//        System.out.print("Введите значение: ");
+//        while (true) {
+//            if (sc.hasNextLine()) {
+//                String str = sc.nextLine();
+//                if (str.equals("1") || str.isEmpty()) {
+//                    System.out.println("Выбрано: " + 1);
+//                    NestedScan = true;
+//                    break;
+//                } else if (str.equals("2")) {
+//                    System.out.println("Выбрано: " + str);
+//                    NestedScan = false;
+//                    break;
+//                }
+//            }
+//        }
+//        System.out.println("");
+//    }
+//
+//    public boolean isNestedScan() {
+//        return NestedScan;
+//    }
 }
