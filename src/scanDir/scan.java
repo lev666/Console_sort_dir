@@ -19,7 +19,7 @@ public class scan {
             File sortDir = dir.changeSortDir(sc);
             dir.NestedScanUser(sc);
             files.scanFolder(localDir, sc);
-            sort.sortDir(localDir, sortDir);
+            sort.sort(localDir, sortDir, dir.isNestedScan());
             sort.report();
             System.out.println();
             System.out.println("");

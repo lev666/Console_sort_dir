@@ -1,6 +1,7 @@
 package scanDir;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class DirectoryPaths {
     private File localDir;
