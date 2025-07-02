@@ -5,17 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Stream;
+import java.util.*;
 
 public class scanFilesAndSort {
 
-    DirectoryPaths dir = new DirectoryPaths();
-    userDirSel dirSelCheckNest = new userDirSel();
     private static final Map<String, String> formatFiles = new HashMap<>();
     private static final Map<String, Integer> reportArray = new HashMap<>();
     private static final String otherStr = "other";
@@ -51,21 +45,31 @@ public class scanFilesAndSort {
         reportArray.put(otherStr, reportArray.getOrDefault(otherStr, 0) + 1);
     }
 
-    public static void CheckingNestedFolders() {
+    public void sort(File folderDir, File sortDir, boolean shouldScanRecursively) {
+        List<File> allFilesToProcess = new ArrayList<>();
 
+        collectFilesRecursively(folderDir, allFilesToProcess, shouldScanRecursively);
+
+        sortCollectedFiles(allFilesToProcess, sortDir);
     }
 
-    public void sortDir(File folderDir, File sortDir) {
+    public void collectFilesRecursively(File folderDir,List<File> allFilesToProcess, boolean shouldScanRecursively) {
+        File[] files = folderDir.listFiles();
+
+        if (files == null) { System.err.println("Ошибка доступа!"); return; }
+
+        for (File file : files) {
+            if (file.isDirectory() && shouldScanRecursively) {
+                collectFilesRecursively(file, allFilesToProcess, shouldScanRecursively);
+            } else if (file.isFile()) {
+                allFilesToProcess.add(file.getAbsoluteFile());
+            }
+        }
+    }
+
+    public void sortCollectedFiles(List<File> filesToProcess, File sortDir) {
         try {
-            File[] files = folderDir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory() && (dirSelCheckNest.isNestedScan())) {
-//                        try (Stream<Path> paths = Files.walk(Paths.get(file.toURI()))) {
-//                            System.out.println("paths: " + paths);
-//                        }
-                        continue;
-                    }
+                for (File file : filesToProcess) {
                     String fileName = file.getName();
                     try {
                         int firstIndex = fileName.lastIndexOf(".");
@@ -90,10 +94,7 @@ public class scanFilesAndSort {
                             System.err.print("Не удалось переместить файл " + file.getName() + ": " + e.getMessage());
                         }
                     }
-                } else {
-                    System.err.println("Ошибка доступа!");
-                }
-            } catch (NullPointerException | IOException | InterruptedException e) {
+            } catch (NullPointerException | InterruptedException e) {
                 System.err.println("Директория пуста!");
         }
     }

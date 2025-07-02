@@ -60,29 +60,29 @@ public class userDirSel {
         return defFolder.getSortDir();
     }
 
-//    public void NestedScanUser(Scanner sc) {
-//        System.out.println("Включить сортировку во вложенных папках? (по умолчанию \"да\")?");
-//        System.out.println("1 - да");
-//        System.out.println("2 - нет");
-//        System.out.print("Введите значение: ");
-//        while (true) {
-//            if (sc.hasNextLine()) {
-//                String str = sc.nextLine();
-//                if (str.equals("1") || str.isEmpty()) {
-//                    System.out.println("Выбрано: " + 1);
-//                    NestedScan = true;
-//                    break;
-//                } else if (str.equals("2")) {
-//                    System.out.println("Выбрано: " + str);
-//                    NestedScan = false;
-//                    break;
-//                }
-//            }
-//        }
-//        System.out.println("");
-//    }
-//
-//    public boolean isNestedScan() {
-//        return NestedScan;
-//    }
+    public void NestedScanUser(Scanner sc) {
+        System.out.println("Включить сортировку для вложенных папок? (по умолчанию \"да\")?");
+        System.out.println("1 - да");
+        System.out.println("2 - нет");
+        System.out.print("Введите значение: ");
+        while (true) {
+            if (sc.hasNextLine()) {
+                String str = sc.nextLine();
+                if (str.equals("1") || str.isEmpty()) {
+                    System.out.println("Выбрано: " + 1);
+                    NestedScan = true;
+                    break;
+                } else if (str.equals("2")) {
+                    System.out.println("Выбрано: " + str);
+                    NestedScan = false;
+                    break;
+                }
+            }
+        }
+        System.out.println("");
+    }
+
+    public boolean isNestedScan() {
+        return NestedScan;
+    }
 }
